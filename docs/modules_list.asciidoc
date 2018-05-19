@@ -1,0 +1,14 @@
+////
+This file is generated! See scripts/docs_collector.py
+////
+
+[options="header"]
+|========================
+|Modules   |Metricsets   
+|<<metricbeat-module-system,system>>  experimental[]   |    
+.1+|   |<<metricbeat-metricset-system-load,load>> experimental[]  
+|================================
+
+--
+
+include::modules/system.asciidoc[]

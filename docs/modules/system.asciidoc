@@ -1,0 +1,41 @@
+////
+This file is generated! See scripts/docs_collector.py
+////
+
+[[metricbeat-module-system]]
+== system module
+
+experimental[]
+
+== system module
+
+This is the system module.
+
+
+
+[float]
+=== Example configuration
+
+The system module supports the standard configuration options that are described
+in <<configuration-metricbeat>>. Here is an example configuration:
+
+[source,yaml]
+----
+perfstatbeat.modules:
+- module: system
+  metricsets: ["load"]
+  enabled: false
+  period: 10s
+  hosts: ["localhost"]
+
+----
+
+[float]
+=== Metricsets
+
+The following metricsets are available:
+
+* <<metricbeat-metricset-system-load,load>>
+
+include::system/load.asciidoc[]
+

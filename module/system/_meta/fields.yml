@@ -1,0 +1,11 @@
+- key: system
+  title: "system"
+  description: >
+    experimental[]
+
+    system module
+  fields:
+    - name: system
+      type: group
+      description: >
+      fields:

@@ -1,0 +1,6 @@
+- module: system
+  metricsets: ["load"]
+  enabled: false
+  period: 10s
+  hosts: ["localhost"]
+
