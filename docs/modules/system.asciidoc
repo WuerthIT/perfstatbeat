@@ -35,7 +35,11 @@ perfstatbeat.modules:
 
 The following metricsets are available:
 
+* <<metricbeat-metricset-system-diskio,diskio>>
+
 * <<metricbeat-metricset-system-load,load>>
+
+include::system/diskio.asciidoc[]
 
 include::system/load.asciidoc[]
 
