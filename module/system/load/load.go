@@ -37,11 +37,9 @@ func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
 		return nil, err
 	}
 
-	var cpustat_data C.perfstat_cpu_total_t
-
 	return &MetricSet{
 		BaseMetricSet: base,
-		cpustat: &cpustat_data,
+		cpustat: new(C.perfstat_cpu_total_t),
 	}, nil
 }
 

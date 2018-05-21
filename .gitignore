@@ -1,2 +1,6 @@
 # Directories
 build
+perfstatbeat
+data
+beat.yml
+.*.swp

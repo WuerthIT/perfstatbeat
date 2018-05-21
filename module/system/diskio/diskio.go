@@ -47,8 +47,8 @@ func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
 		return nil, err
 	}
 
-	var first_data C.perfstat_id_t
-	C.strcpy((*C.char)(unsafe.Pointer(&first_data.name)), C.CString(C.FIRST_DISK))
+	first := new(C.perfstat_id_t)
+	C.strcpy((*C.char)(unsafe.Pointer(&first.name)), C.CString(C.FIRST_DISK))
 
 	num :=  C.perfstat_disk(nil, nil, C.sizeof_perfstat_disk_t, 0)
 	stats := make([]C.perfstat_disk_t, num, num)
@@ -59,7 +59,7 @@ func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
 	return &MetricSet{
 		BaseMetricSet: base,
 		stats: stats,
-		first: &first_data,
+		first: first,
 		buffer: buffer,
 		num: num,
 		sc_clk_tck: uint64(C.sysconf(C._SC_CLK_TCK)),
