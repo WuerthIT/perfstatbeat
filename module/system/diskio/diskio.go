@@ -1,15 +1,13 @@
 package diskio
 
 // #cgo LDFLAGS: -lperfstat
-// #include <stdlib.h>
 // #include <string.h>
 // #include <unistd.h>
 // #include <libperfstat.h>
-// u_longlong_t get_rxfers(perfstat_disk_t *stat) { return stat->__rxfers; }
-// u_longlong_t ticks2ms(u_longlong_t ticks) { return ticks * _system_configuration.Xint / _system_configuration.Xfrac / 1e6; }
 import "C"
 
 import (
+	"reflect"
 	"unsafe"
 	"github.com/elastic/beats/libbeat/common"
 	"github.com/elastic/beats/libbeat/common/cfgwarn"
@@ -30,9 +28,13 @@ func init() {
 // interface methods except for Fetch.
 type MetricSet struct {
 	mb.BaseMetricSet
-	first C.perfstat_id_t
-	num C.int
+	stats []C.perfstat_disk_t
+	first *C.perfstat_id_t
 	buffer *C.perfstat_disk_t
+	num C.int
+	sc_clk_tck uint64
+	xint uint64
+	xfrac uint64
 }
 
 // New creates a new instance of the MetricSet. New is responsible for unpacking
@@ -45,17 +47,24 @@ func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
 		return nil, err
 	}
 
-	var first C.perfstat_id_t
-	C.strcpy((*C.char)(unsafe.Pointer(&first.name)), C.CString(C.FIRST_DISK))
+	var first_data C.perfstat_id_t
+	C.strcpy((*C.char)(unsafe.Pointer(&first_data.name)), C.CString(C.FIRST_DISK))
 
 	num :=  C.perfstat_disk(nil, nil, C.sizeof_perfstat_disk_t, 0)
-	buffer := (*C.perfstat_disk_t)(C.malloc((C.size_t)(num * C.sizeof_perfstat_cpu_total_t)))
+	stats := make([]C.perfstat_disk_t, num, num)
+
+	// get a pointer to the array backing the newly created slice
+	buffer := (*C.perfstat_disk_t)(unsafe.Pointer(((*reflect.SliceHeader)(unsafe.Pointer(&stats))).Data))
 
 	return &MetricSet{
 		BaseMetricSet: base,
-		first: first,
-		num: num,
+		stats: stats,
+		first: &first_data,
 		buffer: buffer,
+		num: num,
+		sc_clk_tck: uint64(C.sysconf(C._SC_CLK_TCK)),
+		xint: uint64(C._system_configuration.Xint),
+		xfrac: uint64(C._system_configuration.Xfrac),
 	}, nil
 }
 
@@ -63,29 +72,26 @@ func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
 // format. It publishes the event which is then forwarded to the output. In case
 // of an error set the Error field of mb.Event or simply call report.Error().
 func (m *MetricSet) Fetch() ([]common.MapStr, error) {
-	C.perfstat_disk(&m.first, m.buffer, C.sizeof_perfstat_disk_t, m.num)
-	stats := (*[1 << 30]C.perfstat_disk_t)(unsafe.Pointer(m.buffer))[:m.num:m.num]
+	C.perfstat_disk(m.first, m.buffer, C.sizeof_perfstat_disk_t, m.num)
 
-	events := make([]common.MapStr, 0, len(stats))
-	for _, counters := range stats {
-
-		rxfers := C.get_rxfers(&counters)
+	events := make([]common.MapStr, 0, len(m.stats))
+	for _, counters := range m.stats {
 
 		event := common.MapStr{
 			"name": C.GoString((*C.char)(unsafe.Pointer(&counters.name))),
 			"vgname": C.GoString((*C.char)(unsafe.Pointer(&counters.vgname))),
 			"read": common.MapStr{
-				"count": rxfers,
+				"count": counters.xrate,
 				"bytes": counters.rblks * counters.bsize,
-				"time": C.ticks2ms(counters.rserv),
+				"time": uint64(counters.rserv) * m.xint / m.xfrac / 1e+6,
 			},
 			"write": common.MapStr{
-				"count": counters.xfers - rxfers,
+				"count": counters.xfers - counters.xrate,
 				"bytes": counters.wblks * counters.bsize,
-				"time": C.ticks2ms(counters.wserv),
+				"time": uint64(counters.wserv) * m.xint / m.xfrac / 1e+6,
 			},
 			"io": common.MapStr{
-				"time": uint64(counters.time) * 1000 / uint64(C.sysconf(C._SC_CLK_TCK)),
+				"time": uint64(counters.time) * 1000 / m.sc_clk_tck,
 			},
 		}
 

@@ -1,7 +1,6 @@
 package load
 
 // #cgo LDFLAGS: -lperfstat
-// #include <stdlib.h>
 // #include <libperfstat.h>
 import "C"
 
@@ -38,9 +37,11 @@ func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
 		return nil, err
 	}
 
+	var cpustat_data C.perfstat_cpu_total_t
+
 	return &MetricSet{
 		BaseMetricSet: base,
-		cpustat:       (*C.perfstat_cpu_total_t)(C.malloc(C.sizeof_perfstat_cpu_total_t)),
+		cpustat: &cpustat_data,
 	}, nil
 }
 
