@@ -45,6 +45,16 @@
       type: group
       description: >
       fields:
+        - name: diskio
+          type: group
+          description: >
+            diskio
+          fields:
+            - name: example
+              type: keyword
+              description: >
+                Example field
+
         - name: load
           type: group
           description: >
