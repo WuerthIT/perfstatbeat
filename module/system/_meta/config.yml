@@ -1,6 +1,6 @@
 - module: system
-  metricsets: ["load"]
-  enabled: false
+  metricsets: ["load", "diskio"]
+  enabled: true
   period: 10s
   hosts: ["localhost"]
 
