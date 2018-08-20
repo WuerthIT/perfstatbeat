@@ -1,16 +1,18 @@
 package diskio
 
-// #cgo LDFLAGS: -lperfstat
-// #include <string.h>
-// #include <unistd.h>
-// #include <libperfstat.h>
+/*
+#cgo LDFLAGS: -lperfstat
+#include <string.h>
+#include <unistd.h>
+#include <libperfstat.h>
+*/
 import "C"
 
 import (
-	"unsafe"
 	"github.com/elastic/beats/libbeat/common"
 	"github.com/elastic/beats/libbeat/common/cfgwarn"
 	"github.com/elastic/beats/metricbeat/mb"
+	"unsafe"
 )
 
 // init registers the MetricSet with the central registry as soon as the program
@@ -27,11 +29,11 @@ func init() {
 // interface methods except for Fetch.
 type MetricSet struct {
 	mb.BaseMetricSet
-	stats []C.perfstat_disk_t
-	first *C.perfstat_id_t
+	stats      []C.perfstat_disk_t
+	first      *C.perfstat_id_t
 	sc_clk_tck uint64
-	sc_xint uint64
-	sc_xfrac uint64
+	sc_xint    uint64
+	sc_xfrac   uint64
 }
 
 // New creates a new instance of the MetricSet. New is responsible for unpacking
@@ -47,16 +49,16 @@ func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
 	first := new(C.perfstat_id_t)
 	C.strcpy((*C.char)(unsafe.Pointer(&first.name)), C.CString(C.FIRST_DISK))
 
-	num :=  C.perfstat_disk(nil, nil, C.sizeof_perfstat_disk_t, 0)
+	num := C.perfstat_disk(nil, nil, C.sizeof_perfstat_disk_t, 0)
 	stats := make([]C.perfstat_disk_t, num, num)
 
 	return &MetricSet{
 		BaseMetricSet: base,
-		stats: stats,
-		first: first,
-		sc_clk_tck: uint64(C.sysconf(C._SC_CLK_TCK)),
-		sc_xint: uint64(C._system_configuration.Xint),
-		sc_xfrac: uint64(C._system_configuration.Xfrac),
+		stats:         stats,
+		first:         first,
+		sc_clk_tck:    uint64(C.sysconf(C._SC_CLK_TCK)),
+		sc_xint:       uint64(C._system_configuration.Xint),
+		sc_xfrac:      uint64(C._system_configuration.Xfrac),
 	}, nil
 }
 
@@ -70,17 +72,17 @@ func (m *MetricSet) Fetch() ([]common.MapStr, error) {
 	for _, counters := range m.stats {
 
 		event := common.MapStr{
-			"name": C.GoString((*C.char)(unsafe.Pointer(&counters.name))),
+			"name":   C.GoString((*C.char)(unsafe.Pointer(&counters.name))),
 			"vgname": C.GoString((*C.char)(unsafe.Pointer(&counters.vgname))),
 			"read": common.MapStr{
 				"count": counters.xrate,
 				"bytes": counters.rblks * counters.bsize,
-				"time": uint64(counters.rserv) * m.sc_xint / m.sc_xfrac / 1e+6,
+				"time":  uint64(counters.rserv) * m.sc_xint / m.sc_xfrac / 1e+6,
 			},
 			"write": common.MapStr{
 				"count": counters.xfers - counters.xrate,
 				"bytes": counters.wblks * counters.bsize,
-				"time": uint64(counters.wserv) * m.sc_xint / m.sc_xfrac / 1e+6,
+				"time":  uint64(counters.wserv) * m.sc_xint / m.sc_xfrac / 1e+6,
 			},
 			"io": common.MapStr{
 				"time": uint64(counters.time) * 1000 / m.sc_clk_tck,

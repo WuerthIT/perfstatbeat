@@ -1,7 +1,9 @@
 package load
 
-// #cgo LDFLAGS: -lperfstat
-// #include <libperfstat.h>
+/*
+#cgo LDFLAGS: -lperfstat
+#include <libperfstat.h>
+*/
 import "C"
 
 import (
@@ -39,7 +41,7 @@ func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
 
 	return &MetricSet{
 		BaseMetricSet: base,
-		cpustat: new(C.perfstat_cpu_total_t),
+		cpustat:       new(C.perfstat_cpu_total_t),
 	}, nil
 }
 
@@ -49,22 +51,22 @@ func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
 func (m *MetricSet) Fetch(report mb.ReporterV2) {
 	C.perfstat_cpu_total(nil, m.cpustat, C.sizeof_perfstat_cpu_total_t, 1)
 
-	load_factor := float64(1<<C.SBITS)
+	load_factor := float64(1 << C.SBITS)
 	cores_factor := float64(m.cpustat.ncpus)
-	load_1 := float64(m.cpustat.loadavg[0])/load_factor
-	load_5 := float64(m.cpustat.loadavg[1])/load_factor
-	load_15 := float64(m.cpustat.loadavg[2])/load_factor
+	load_1 := float64(m.cpustat.loadavg[0]) / load_factor
+	load_5 := float64(m.cpustat.loadavg[1]) / load_factor
+	load_15 := float64(m.cpustat.loadavg[2]) / load_factor
 
 	report.Event(mb.Event{
 		MetricSetFields: common.MapStr{
-			"1": load_1,
-			"5": load_5,
-			"15": load_15,
+			"1":     load_1,
+			"5":     load_5,
+			"15":    load_15,
 			"cores": m.cpustat.ncpus,
 			"norm": common.MapStr{
-				"1": load_1/cores_factor,
-				"5": load_5/cores_factor,
-				"15": load_15/cores_factor,
+				"1":  load_1 / cores_factor,
+				"5":  load_5 / cores_factor,
+				"15": load_15 / cores_factor,
 			},
 		},
 	})
