@@ -327,44 +327,172 @@ Kubernetes container image
 [[exported-fields-system]]
 == system fields
 
-experimental[]
-system module
+AIX performance metrics collected through the perfstat API and supplied in a form, that is mostly compatible with the upstream metricbeat system module.
 
 
 
 [float]
 == system fields
 
+`system` contains local system metrics.
 
 
 
 [float]
 == diskio fields
 
-diskio
+`diskio` contains disk IO metrics collected from the operating system.
 
 
 
 [float]
-=== `system.diskio.example`
+=== `system.diskio.name`
 
 type: keyword
 
-Example field
+example: hdisk0
+
+The disk name.
+
+
+[float]
+=== `system.diskio.vgname`
+
+type: keyword
+
+example: rootvg
+
+The volume group which the disk belongs to.
+
+
+[float]
+=== `system.diskio.udid`
+
+type: keyword
+
+The disk's unique disk ID (UDID).
+
+
+[float]
+=== `system.diskio.read.count`
+
+type: long
+
+The total number of reads completed successfully.
+
+
+[float]
+=== `system.diskio.write.count`
+
+type: long
+
+The total number of writes completed successfully.
+
+
+[float]
+=== `system.diskio.read.bytes`
+
+type: long
+
+format: bytes
+
+The total number of bytes read successfully.
+
+
+[float]
+=== `system.diskio.write.bytes`
+
+type: long
+
+format: bytes
+
+The total number of bytes written successfully.
+
+
+[float]
+=== `system.diskio.read.time`
+
+type: long
+
+The total number of milliseconds spent by all reads.
+
+
+[float]
+=== `system.diskio.write.time`
+
+type: long
+
+The total number of milliseconds spent by all writes.
+
+
+[float]
+=== `system.diskio.io.time`
+
+type: long
+
+The total number of of milliseconds spent doing I/Os.
 
 
 [float]
 == load fields
 
-load
+CPU load averages.
 
 
 
 [float]
-=== `system.load.example`
+=== `system.load.1`
 
-type: keyword
+type: scaled_float
 
-Example field
+Load average for the last minute.
+
+
+[float]
+=== `system.load.5`
+
+type: scaled_float
+
+Load average for the last 5 minutes.
+
+
+[float]
+=== `system.load.15`
+
+type: scaled_float
+
+Load average for the last 15 minutes.
+
+
+[float]
+=== `system.load.norm.1`
+
+type: scaled_float
+
+Load for the last minute divided by the number of cores.
+
+
+[float]
+=== `system.load.norm.5`
+
+type: scaled_float
+
+Load for the last 5 minutes divided by the number of cores.
+
+
+[float]
+=== `system.load.norm.15`
+
+type: scaled_float
+
+Load for the last 15 minutes divided by the number of cores.
+
+
+[float]
+=== `system.load.cores`
+
+type: long
+
+The number of CPU cores present on the host.
 
 

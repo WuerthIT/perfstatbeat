@@ -7,7 +7,7 @@ This file is generated! See scripts/docs_collector.py
 |Modules   |Metricsets   
 |<<metricbeat-module-system,system>>  experimental[]   |    
 .2+|   |<<metricbeat-metricset-system-diskio,diskio>> experimental[]  
-|<<metricbeat-metricset-system-load,load>> experimental[]  
+|<<metricbeat-metricset-system-load,load>>   
 |================================
 
 --

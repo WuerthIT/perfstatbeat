@@ -1,11 +1,12 @@
 - key: system
   title: "system"
   description: >
-    experimental[]
-
-    system module
+    AIX performance metrics collected through the perfstat API
+    and supplied in a form, that is mostly compatible with
+    the upstream metricbeat system module.
   fields:
     - name: system
       type: group
       description: >
+        `system` contains local system metrics.
       fields:

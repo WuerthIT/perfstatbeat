@@ -1,9 +1,58 @@
 - name: diskio
   type: group
   description: >
-    diskio
+    `diskio` contains disk IO metrics collected from the operating system.
   fields:
-    - name: example
+    - name: name
+      type: keyword
+      example: hdisk0
+      description: >
+        The disk name.
+
+    - name: vgname
+      type: keyword
+      example: rootvg
+      description: >
+        The volume group which the disk belongs to.
+
+    - name: udid
       type: keyword
       description: >
-        Example field
+        The disk's unique disk ID (UDID).
+
+    - name: read.count
+      type: long
+      description: >
+        The total number of reads completed successfully.
+
+    - name: write.count
+      type: long
+      description: >
+        The total number of writes completed successfully.
+
+    - name: read.bytes
+      type: long
+      format: bytes
+      description: >
+        The total number of bytes read successfully.
+
+    - name: write.bytes
+      type: long
+      format: bytes
+      description: >
+        The total number of bytes written successfully.
+
+    - name: read.time
+      type: long
+      description: >
+        The total number of milliseconds spent by all reads.
+
+    - name: write.time
+      type: long
+      description: >
+        The total number of milliseconds spent by all writes.
+
+    - name: io.time
+      type: long
+      description: >
+        The total number of of milliseconds spent doing I/Os.
