@@ -1,23 +1,46 @@
 # perfstatbeat
 
-perfstatbeat is a beat based on metricbeat which was generated with metricbeat/metricset generator.
+perfstatbeat is a beat based on metricbeat which collects performance metrics through the perfstat API of the AIX operating system and supplies them in a form, that is mostly compatible with the metricbeat system module.
 
+## Current state
+
+These modules and metrics have already been implemented:
+
+- `system.load`
+
+    Same fields as the upstream module.
+
+- `system.diskio`
+
+    - Disk name, volume group name and unique disk identifier (UDID).
+    - IO count, size and time per read and write (i.e. average IO time can be calculated).
+
+This does not seem to be much, but it's both a working metric that uses a global interface of the perfstat API, as well as one that uses a component-specific interface that is an example of implementing others.
 
 ## Getting started
 
-To get started run the following command. This command should only be run once.
+### Build requirements
+
+- An AIX operating system instance. I'm using version 7.1. Support for Go should be even better on version 7.2 but I haven't try it yet.
+- A recent version of `gcc-go` and its dependencies. I'm using the packages kindly provided by [BullFreeware](http://www.bullfreeware.com/search.php?package=gcc-go).
+- Various open source packages, at least GNU `make`. Some tasks also require `find-utils` and Python. I'm using the packages kindly provided by [Michael Perzl](http://www.perzl.org/aix/).
+
+### Runtime requirements
+
+- `libgo` should be the same as in the build environment.
+- `libgcc`, not necessarily at the same level or from the same source like `libgo`.
+
+### Compiling and running
+
+To compile your beat run `gmake`. Then you can run the following command to see the first output:
 
 ```
-make setup
+./perfstatbeat -e -d "*"
 ```
 
-It will ask you for the module and metricset name. Insert the name accordingly.
+## Development
 
-To compile your beat run `make`. Then you can run the following command to see the first output:
-
-```
-perfstatbeat -e -d "*"
-```
+perfstatbeat is a beat based on metricbeat which was generated with metricbeat/metricset generator.
 
 In case further modules are metricsets should be added, run:
 
@@ -33,50 +56,18 @@ make collect
 
 This updates all fields and docs with the most recent changes.
 
-## Use vendoring
+## Vendoring
 
-We recommend to use vendoring for your beat. This means the dependencies are put into your beat folder. The beats team currently uses [govendor](https://github.com/kardianos/govendor) for vendoring.
-
-```
-govendor init
-govendor update +e
-```
-
-This will create a directory `vendor` inside your repository. To make sure all dependencies for the Makefile commands are loaded from the vendor directory, find the following line in your Makefile:
-
-```
-ES_BEATS=${GOPATH}/src/github.com/elastic/beats
-```
-
-Replace it with:
-```
-ES_BEATS=./vendor/github.com/elastic/beats
-```
-
-
-## Versioning
-
-We recommend to version your repository with git and make it available on Github so others can also use your project. The initialise the git repository and add the first commits, you can use the following commands:
-
-```
-git init
-git add README.md CONTRIBUTING.md
-git commit -m "Initial commit"
-git add LICENSE
-git commit -m "Add the LICENSE"
-git add .gitignore
-git commit -m "Add git settings"
-git add .
-git reset -- .travis.yml
-git commit -m "Add perfstatbeat"
-```
+perfstatbeat currently includes version 6.2.3 of beats in the `vendor` subfolder. Later version make use of Go modules that currently don't run on AIX.
 
 ## Packaging
 
-The beat frameworks provides tools to crosscompile and package your beat for different platforms. This requires [docker](https://www.docker.com/) and vendoring as described above. To build packages of your beat, run the following command:
+The original packaging process makes use of containers and will obviously not work here. So currently the binary file has to be distributed manually. Maybe an RPM spec file will be provided later.
 
-```
-make package
-```
+## Disclaimer
 
-This will fetch and create all images required for the build process. The hole process to finish can take several minutes.
+AIX is a registered trademark of the International Business Machines Corporation.
+
+Metricbeat is a trademark of Elasticsearch BV.
+
+perfstatbeat is not endorsed by any of these companies.

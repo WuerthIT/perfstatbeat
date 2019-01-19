@@ -327,7 +327,7 @@ Kubernetes container image
 [[exported-fields-system]]
 == system fields
 
-AIX performance metrics collected through the perfstat API and supplied in a form, that is mostly compatible with the upstream metricbeat system module.
+Performance metrics collected through the perfstat API of the AIX operating system and supplied in a form, that is mostly compatible with the metricbeat system module.
 
 
 
