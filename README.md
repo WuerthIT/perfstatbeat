@@ -58,7 +58,7 @@ This updates all fields and docs with the most recent changes.
 
 ## Vendoring
 
-perfstatbeat currently includes version 6.2.3 of beats in the `vendor` subfolder. Later version make use of Go modules that currently don't run on AIX.
+perfstatbeat currently includes version 6.2.4 of beats in the `vendor` subfolder with [some minor modifications](https://github.com/WuerthIT/beats/releases/tag/v6.2.4-support_aix) on libraries inside their `vendor` directory. Later versions make use of Go modules that are not available on the AIX operation system currently.
 
 ## Packaging
 
