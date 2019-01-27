@@ -15,19 +15,19 @@ import (
 	"unsafe"
 )
 
-type odmError struct {
+type OdmError struct {
 	odmerrno C.int
 }
 
 var whitespace = regexp.MustCompile("\\s+")
 
-func (e odmError) Error() string {
+func (e OdmError) Error() string {
 	var message *C.char
 	C.odm_err_msg(e.odmerrno, &message)
 	return "ODM subroutine failed: " + strings.TrimSpace(whitespace.ReplaceAllLiteralString(C.GoString(message), " "))
 }
 
-func Get_attribute_map(attribute string) (map[string]string, error) {
+func GetAttributeMap(attribute string) (map[string]string, error) {
 	m := make(map[string]string)
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -48,5 +48,5 @@ func Get_attribute_map(attribute string) (map[string]string, error) {
 			}
 		}
 	}
-	return m, odmError{C.odmerrno}
+	return m, OdmError{C.odmerrno}
 }

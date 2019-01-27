@@ -23,11 +23,12 @@ in <<configuration-metricbeat>>. Here is an example configuration:
 ----
 perfstatbeat.modules:
 - module: system
-  metricsets: ["load", "diskio"]
+  metricsets:
+    - diskio
+    - load
   enabled: true
   period: 10s
   hosts: ["localhost"]
-
 ----
 
 [float]
