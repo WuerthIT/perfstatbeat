@@ -8,4 +8,3 @@ elasticsearch
 requests
 autopep8
 six
-docker-compose
