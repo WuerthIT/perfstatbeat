@@ -40,7 +40,7 @@ To compile your beat run `gmake`. Then you can run the following command to see 
 ./perfstatbeat -e -d "*"
 ```
 
-Note, that I've seen linker problems when the `ar` command of GNU binutils is beeing used insted of the native one. This could happen, if `/opt/freeware/bin` shows up in front of `/usr/bin` in the `PATH` environment.
+Note, that I've seen linker problems when the `ar` command of GNU binutils is being used instead of the native one. This could happen, if `/opt/freeware/bin` shows up in front of `/usr/bin` in the `PATH` environment.
 
 ## Development
 
